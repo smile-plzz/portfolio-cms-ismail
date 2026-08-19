@@ -123,7 +123,7 @@
   justify-content: space-between;
   gap: 16px;
   font-size: 12px;
-  color: var(--color-neutral-600);
+  color: var(--color-meta);
   flex-wrap: wrap;
 }
 

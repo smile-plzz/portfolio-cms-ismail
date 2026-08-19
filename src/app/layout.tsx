@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Lora } from "next/font/google";
 import { getSettings } from "@/lib/content";
+import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -21,7 +22,7 @@ const lora = Lora({
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
   return {
-    metadataBase: new URL("https://ismailhossain.dev"),
+    metadataBase: new URL(siteUrl),
     title: {
       default: `${settings.name} — ${settings.role}`,
       template: `%s — ${settings.name}`,
@@ -33,6 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `${settings.name} — ${settings.role}`,
       description: settings.about[0],
     },
+    alternates: { canonical: "/" },
     robots: { index: true, follow: true },
   };
 }
@@ -49,7 +51,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${lora.variable}`}>
+    // The bootstrap script stamps data-theme before hydration, so the server
+    // markup legitimately differs from the DOM React first sees.
+    <html
+      lang="en"
+      className={`${cormorant.variable} ${lora.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>

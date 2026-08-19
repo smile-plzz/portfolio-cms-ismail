@@ -5,8 +5,13 @@ type Props = {
   image: ImageRef;
   height: number | string;
   width?: number | string;
-  /** Shown instead of a graphic when there is no screenshot yet. */
-  fallbackLabel?: string;
+  /**
+   * Shown instead of a graphic when there is no screenshot yet. The numeral
+   * carries the rank the missing image would have carried; the tags say what
+   * the thing is. The title is deliberately not repeated — it already sits
+   * directly below in the card, and twice is worse than once.
+   */
+  fallbackNumber?: string;
   fallbackTags?: string[];
   priority?: boolean;
   sizes?: string;
@@ -26,7 +31,7 @@ export function Plate({
   image,
   height,
   width,
-  fallbackLabel,
+  fallbackNumber,
   fallbackTags,
   priority,
   sizes = "(max-width: 1023px) 100vw, 50vw",
@@ -49,28 +54,39 @@ export function Plate({
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          gap: 10,
+          gap: 8,
           padding: "20px 24px",
           textAlign: "center",
         }}
       >
-        {fallbackLabel ? (
+        {fallbackNumber ? (
           <span
-            className="display"
+            className="tnum"
             style={{
               fontFamily: "var(--font-heading)",
-              fontSize: 26,
-              lineHeight: 1.15,
-              color: "var(--color-neutral-700)",
-              maxWidth: "20ch",
+              fontWeight: 400,
+              fontSize: 46,
+              lineHeight: 1,
+              color: "var(--color-meta)",
             }}
           >
-            {fallbackLabel}
+            {fallbackNumber}
           </span>
         ) : null}
         {fallbackTags?.length ? (
-          <span className="kick" style={{ color: "var(--color-neutral-500)" }}>
+          <span className="kick" style={{ color: "var(--color-meta)" }}>
             {fallbackTags.join(" · ")}
+          </span>
+        ) : null}
+        {fallbackNumber || fallbackTags?.length ? (
+          <span
+            style={{
+              fontSize: 11.5,
+              fontStyle: "italic",
+              color: "var(--color-meta)",
+            }}
+          >
+            No screenshot yet
           </span>
         ) : null}
       </div>

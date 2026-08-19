@@ -87,3 +87,28 @@ These ship as scaffolding and are flagged, not passed off as real:
 - The visitor badge is still `visitor-badge.laobi.icu`, moved to the footer.
 - The CV lists three Atlassian certificates; the live site listed four including
   Forge Fundamentals. Four were kept — confirm before launch.
+
+## Admin
+
+`/admin` is built — dashboard, project editor with a live preview pane,
+post editor, media library, settings. Single-editor auth: set
+`ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` and the studio is reachable; leave
+them unset and `/admin` stays closed. `SANITY_API_WRITE_TOKEN` gates whether
+it can actually save — without it the studio is browsable but read-only,
+same as the public site's fallback to the seed manifest.
+
+Publishing a project or post calls `revalidateTag("content")`, so a save is
+live everywhere within the minute — index, home grid and prev/next together.
+Point the Sanity webhook at `/api/revalidate?secret=<SANITY_REVALIDATE_SECRET>`
+to get the same effect from edits made in Sanity Studio directly.
+
+The post editor is a constrained Markdown textarea, not a rich-text library —
+only the subset the reading page has type styles for (`##`/`###` headings,
+`> ` quotes, `*italic*`, `[text](url)` links) round-trips to Portable Text.
+
+## SEO
+
+`sitemap.xml`, `robots.txt`, per-page JSON-LD (Person / CreativeWork /
+BlogPosting) and a generated OG image are wired in — none of this was in the
+design frames, per handoff §9 ("not designed. Add them, matching the type
+system").

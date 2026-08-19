@@ -35,6 +35,8 @@
   font-size: 30px;
   font-weight: 400;
   margin: 36px 0 14px;
+  /* The contents rail jumps here; clear the sticky mobile bar. */
+  scroll-margin-top: 76px;
 }
 
 .h3 {

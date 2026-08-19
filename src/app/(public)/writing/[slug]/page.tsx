@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { isValidElement, type ReactNode } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
+import { JsonLd } from "@/components/JsonLd";
 import { getPost, getPostNeighbours, getPosts } from "@/lib/content";
+import { absolute } from "@/lib/site";
 import styles from "./post.module.css";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -19,6 +22,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: post.title,
     description: post.summary,
+    alternates: { canonical: `/writing/${post.slug}` },
     openGraph: {
       type: "article",
       title: post.title,
@@ -32,7 +36,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 const components: PortableTextComponents = {
   block: {
     normal: ({ children }) => <p className="lead">{children}</p>,
-    h2: ({ children }) => <h2 className={styles.h2}>{children}</h2>,
+    // The contents rail links to these, so the id has to match its slug.
+    h2: ({ children }) => (
+      <h2 id={slugify(toText(children))} className={styles.h2}>
+        {children}
+      </h2>
+    ),
     h3: ({ children }) => <h3 className={styles.h3}>{children}</h3>,
     blockquote: ({ children }) => (
       <blockquote className={styles.quote}>{children}</blockquote>
@@ -57,6 +66,18 @@ export default async function PostPage({ params }: Params) {
 
   return (
     <article>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: post.title,
+          description: post.summary,
+          datePublished: post.date,
+          url: absolute(`/writing/${post.slug}`),
+          keywords: post.tags?.join(", "),
+          author: { "@type": "Person", name: "Md. Ismail Hossain" },
+        }}
+      />
       <div className={styles.topbar}>
         <Link href="/writing" style={{ fontSize: 13 }}>
           ← All writing
@@ -152,6 +173,17 @@ function extractHeadings(body: unknown): Heading[] {
 
 function slugify(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+/** Portable Text hands headings a React node tree; the id needs the plain text. */
+function toText(node: ReactNode): string {
+  if (node === null || node === undefined || typeof node === "boolean") return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(toText).join("");
+  if (isValidElement(node)) {
+    return toText((node.props as { children?: ReactNode }).children);
+  }
+  return "";
 }
 
 function formatLongDate(iso: string) {
