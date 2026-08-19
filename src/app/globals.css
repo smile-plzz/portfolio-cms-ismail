@@ -34,6 +34,13 @@
   --color-accent-prose: var(--color-accent-700);
   --color-plate-mat: var(--color-surface);
 
+  /* Meta text — kickers, captions, card meta. The handoff assumes neutral-600
+     clears AA on the light ground; measured, it is ~3.3:1, which fails at the
+     12–13px these are set in. One step darker passes and keeps the hierarchy
+     (still clearly lighter than body). Dark mode's neutral-600 already clears
+     it, so the role only re-points on light. */
+  --color-meta: var(--color-neutral-700);
+
   --font-heading: var(--font-cormorant), Georgia, serif;
   --font-heading-weight: 600;
   --font-body: var(--font-lora), Georgia, serif;
@@ -84,6 +91,7 @@
      lifts toward the light steps instead of the dark ones. */
   --color-accent-prose: var(--color-accent-300);
   --color-plate-mat: #262422;
+  --color-meta: var(--color-neutral-600);
 }
 
 *,
@@ -154,7 +162,7 @@ figure {
 figcaption {
   font-size: 11px;
   margin-top: var(--space-1);
-  color: var(--color-neutral-600);
+  color: var(--color-meta);
 }
 
 :focus {
@@ -305,6 +313,23 @@ textarea.input {
   resize: vertical;
 }
 
+select.input {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 14px center, right 9px center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 28px;
+}
+
+/* Native controls default to the browser's blue; the palette has one accent. */
+input[type="checkbox"],
+input[type="radio"],
+progress {
+  accent-color: var(--color-accent);
+}
+
 .field[data-invalid="true"] > label {
   color: var(--color-accent-prose);
 }
@@ -390,7 +415,7 @@ textarea.input {
   align-items: center;
   gap: 6px;
   font-size: 11px;
-  color: var(--color-neutral-600);
+  color: var(--color-meta);
 }
 
 /* ── tags ──────────────────────────────────────────────────────────── */
@@ -427,6 +452,16 @@ textarea.input {
 button.tag {
   cursor: pointer;
   font-family: inherit;
+  /* Reset the UA button chrome — a plain <button> ships its own background,
+     border and appearance, which fights the outline/accent/neutral variants
+     above (in practice: a light grey face that survives dark mode). */
+  appearance: none;
+  background: none;
+  border: 0;
+}
+
+button.tag-outline {
+  border: 1px solid var(--color-accent);
 }
 
 button.tag-outline:hover {
@@ -445,7 +480,7 @@ button.tag-outline:hover {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-neutral-600);
+  color: var(--color-meta);
   padding: var(--space-2);
   border-bottom: 1px solid var(--color-divider);
 }
@@ -509,7 +544,7 @@ button.tag-outline:hover {
   font-weight: var(--font-heading-weight);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-neutral-600);
+  color: var(--color-meta);
   font-feature-settings: "tnum";
 }
 

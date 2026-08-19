@@ -5,6 +5,8 @@ import { ThumbPlate } from "@/components/Plate";
 import { ContactForm } from "@/components/ContactForm";
 import { VisitorCount } from "@/components/VisitorCount";
 import { Reveal } from "@/components/Reveal";
+import { JsonLd } from "@/components/JsonLd";
+import { absolute } from "@/lib/site";
 import {
   getCredentialCounts,
   getExperiences,
@@ -45,6 +47,25 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: settings.name,
+          jobTitle: settings.role,
+          email: `mailto:${settings.email}`,
+          telephone: settings.phoneHref,
+          url: absolute("/"),
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: settings.locationShort,
+          },
+          sameAs: Object.values(settings.links),
+          knowsAbout: skillGroups.flatMap((group) =>
+            group.items.map((item) => item.name),
+          ),
+        }}
+      />
       <section className={styles.hero}>
         <div className="kick">{settings.name}</div>
         <h1 className={`display ${styles.heroTitle}`}>{settings.positioning}</h1>
@@ -220,7 +241,7 @@ export default async function HomePage() {
               <div
                 style={{
                   fontSize: 13,
-                  color: "var(--color-neutral-600)",
+                  color: "var(--color-meta)",
                   margin: "4px 0 12px",
                 }}
               >

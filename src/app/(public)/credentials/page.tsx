@@ -133,7 +133,7 @@ export default async function CredentialsPage() {
         <div className={styles.extraGrid}>
           {extra.map((item) => (
             <div key={item.title} className={styles.extraItem}>
-              <strong style={{ fontWeight: 600 }}>{item.title}</strong> —{" "}
+              <span className={styles.extraTitle}>{item.title}</span> —{" "}
               {item.description}{" "}
               {item.linkUrl ? (
                 <a href={item.linkUrl} target="_blank" rel="noreferrer">

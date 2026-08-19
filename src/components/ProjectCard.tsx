@@ -46,7 +46,7 @@ export function ProjectCard({
     <Plate
       image={project.shot ?? null}
       height={height}
-      fallbackLabel={project.title}
+      fallbackNumber={number}
       fallbackTags={project.tags}
       sizes={
         variant === "featured"
@@ -64,7 +64,9 @@ export function ProjectCard({
           {showYear && project.year ? ` — ${project.year}` : ""}
         </div>
       ) : null}
-      <h3
+      {/* The card title is the first heading under the page h1 on both home
+          and the index, so it sets at h2 regardless of its type size. */}
+      <h2
         className="display"
         style={{
           fontSize: TITLE_SIZE[variant],
@@ -72,7 +74,7 @@ export function ProjectCard({
         }}
       >
         {project.title}
-      </h3>
+      </h2>
       <p
         style={{
           fontSize: BODY_SIZE[variant],

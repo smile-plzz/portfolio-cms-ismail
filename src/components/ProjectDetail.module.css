@@ -180,3 +180,53 @@
     text-align: left;
   }
 }
+
+/* Dense: the studio preview pane. The layout is unchanged — only the page
+   gutters and the write-up rail collapse, because the pane supplies its own
+   padding and is far narrower than a page. */
+.dense {
+  --gutter: 0px;
+}
+
+.dense .header,
+.dense .writeup {
+  display: block;
+}
+
+.dense .header {
+  padding-bottom: 24px;
+}
+
+.dense .title {
+  font-size: 34px;
+  margin: 10px 0 10px;
+}
+
+.dense .summary {
+  font-size: 16px;
+}
+
+.dense .facts {
+  margin-top: 18px;
+}
+
+.dense .hero {
+  margin: 24px 0;
+}
+
+.dense .writeup {
+  padding-bottom: 0;
+}
+
+.dense .writeupRail {
+  position: static;
+  margin-bottom: 12px;
+}
+
+.dense .sectionLabel {
+  font-size: 13px;
+}
+
+.dense :global(.lead) {
+  font-size: 15px;
+}
