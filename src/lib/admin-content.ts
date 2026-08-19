@@ -1,11 +1,14 @@
-import { client, sanityConfigured } from "./sanity";
+import { adminReadClient } from "./sanity";
 import * as seed from "@/content/manifest";
 import type { Post, Project, SiteSettings } from "./types";
 
 /**
  * The studio's own read layer. It needs `_id`, drafts and hidden documents —
  * none of which the public queries return — and it must never be cached, or
- * an editor would see their own save go missing.
+ * an editor would see their own save go missing. It reads through
+ * `adminReadClient()`, not the public `client`: the public one is pinned to
+ * `perspective: "published"`, which would make a freshly created draft
+ * invisible to the editor that just created it.
  *
  * Without Sanity it projects the seed manifest into the same shape, using the
  * seed's deterministic ids, so the studio is browsable read-only.
@@ -20,7 +23,8 @@ function seedId(prefix: string, key: string) {
 }
 
 async function live<T>(groq: string, params: Record<string, unknown> = {}) {
-  if (!client || !sanityConfigured) return null;
+  const client = adminReadClient();
+  if (!client) return null;
   try {
     return await client.fetch<T>(groq, params, { cache: "no-store" });
   } catch {

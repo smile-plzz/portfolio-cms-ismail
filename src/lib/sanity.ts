@@ -40,6 +40,28 @@ export function writeClient(): SanityClient {
   });
 }
 
+/**
+ * The studio's read client — separate from the public `client` above, which
+ * is deliberately pinned to `perspective: "published"` so a visitor never
+ * sees a draft. The studio needs the opposite: `perspective: "raw"` so newly
+ * created drafts (`drafts.*` ids) are visible the moment they're saved, plus
+ * the write token so it reads past the CDN and past any dataset ACLs.
+ * Returns null wherever `writeClient()` would throw — the studio falls back
+ * to browsing the seed manifest read-only in that case.
+ */
+export function adminReadClient(): SanityClient | null {
+  const token = process.env.SANITY_API_WRITE_TOKEN;
+  if (!projectId || !token) return null;
+  return createClient({
+    projectId,
+    dataset,
+    apiVersion,
+    token,
+    useCdn: false,
+    perspective: "raw",
+  });
+}
+
 const builder = sanityConfigured ? imageUrlBuilder({ projectId, dataset }) : null;
 
 export function imageUrl(source: unknown, width: number, height?: number) {
