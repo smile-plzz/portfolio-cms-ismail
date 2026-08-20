@@ -6,6 +6,7 @@ import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import { JsonLd } from "@/components/JsonLd";
 import { getPost, getPostNeighbours, getPosts } from "@/lib/content";
 import { absolute } from "@/lib/site";
+import { formatLongDate } from "@/lib/date";
 import styles from "./post.module.css";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -184,12 +185,4 @@ function toText(node: ReactNode): string {
     return toText((node.props as { children?: ReactNode }).children);
   }
   return "";
-}
-
-function formatLongDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
 }

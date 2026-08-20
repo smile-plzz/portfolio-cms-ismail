@@ -12,13 +12,26 @@ type Options<T> = {
    */
   save: (draft: T, options: { silent: boolean }) => Promise<string | void>;
   writable: boolean;
+  /**
+   * Whether a silent background save is even possible. Posts have a real
+   * `drafts.` document to write autosaves into; projects and settings do not
+   * (projects use a `hidden` flag, settings is a singleton), so silently
+   * "saving" there would patch the live document. Default true; editors
+   * without a draft document must pass false.
+   */
+  autosave?: boolean;
 };
 
 /**
  * Draft state for the two editors: dirty tracking, autosave, an explicit save,
  * and the guard that stops a navigation losing unsaved edits.
  */
-export function useDraft<T extends object>({ initial, save, writable }: Options<T>) {
+export function useDraft<T extends object>({
+  initial,
+  save,
+  writable,
+  autosave = true,
+}: Options<T>) {
   const router = useRouter();
   const toast = useToast();
 
@@ -79,12 +92,14 @@ export function useDraft<T extends object>({ initial, save, writable }: Options<
   );
 
   // Autosave four seconds after typing stops, and only when there is something
-  // to persist — an idle editor should not write.
+  // to persist — an idle editor should not write. Skipped entirely where a
+  // silent save would have nowhere safe to land (see `autosave` above); the
+  // dirty-tracking below still guards against losing those edits.
   useEffect(() => {
-    if (!dirty || !writable) return;
+    if (!dirty || !writable || !autosave) return;
     const timer = window.setTimeout(() => void commit({ silent: true }), 4000);
     return () => window.clearTimeout(timer);
-  }, [dirty, draft, commit, writable]);
+  }, [dirty, draft, commit, writable, autosave]);
 
   // A full page unload gets the browser's own prompt…
   useEffect(() => {

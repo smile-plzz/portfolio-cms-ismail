@@ -7,10 +7,12 @@ export function TagInput({
   id,
   value,
   onChange,
+  writable = true,
 }: {
   id: string;
   value: string[];
   onChange: (next: string[]) => void;
+  writable?: boolean;
 }) {
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState("");
@@ -37,40 +39,44 @@ export function TagInput({
       {value.map((tag) => (
         <span key={tag} className="tag tag-accent">
           {tag}
-          <button
-            type="button"
-            aria-label={`Remove ${tag}`}
-            onClick={() => onChange(value.filter((item) => item !== tag))}
-            style={{
-              background: "none",
-              border: 0,
-              cursor: "pointer",
-              color: "inherit",
-              font: "inherit",
-              marginLeft: 6,
-              padding: 0,
-            }}
-          >
-            ×
-          </button>
+          {writable ? (
+            <button
+              type="button"
+              aria-label={`Remove ${tag}`}
+              onClick={() => onChange(value.filter((item) => item !== tag))}
+              style={{
+                background: "none",
+                border: 0,
+                cursor: "pointer",
+                color: "inherit",
+                font: "inherit",
+                marginLeft: 6,
+                padding: 0,
+              }}
+            >
+              ×
+            </button>
+          ) : null}
         </span>
       ))}
-      {adding ? (
-        <input
-          id={id}
-          className="input"
-          autoFocus
-          value={draft}
-          onChange={(event) => setDraft(event.target.value)}
-          onBlur={commit}
-          onKeyDown={onKeyDown}
-          style={{ width: 140, minHeight: 26, fontSize: 12, padding: "2px 8px" }}
-        />
-      ) : (
-        <button type="button" className="tag tag-outline" onClick={() => setAdding(true)}>
-          + add
-        </button>
-      )}
+      {writable ? (
+        adding ? (
+          <input
+            id={id}
+            className="input"
+            autoFocus
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            onBlur={commit}
+            onKeyDown={onKeyDown}
+            style={{ width: 140, minHeight: 26, fontSize: 12, padding: "2px 8px" }}
+          />
+        ) : (
+          <button type="button" className="tag tag-outline" onClick={() => setAdding(true)}>
+            + add
+          </button>
+        )
+      ) : null}
     </div>
   );
 }

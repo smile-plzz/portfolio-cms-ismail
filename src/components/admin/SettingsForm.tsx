@@ -1,6 +1,7 @@
 "use client";
 
 import type { SiteSettings } from "@/lib/types";
+import { isPlaceholderPositioning } from "@/lib/text";
 import { Dialog } from "./Dialog";
 import { ImageField } from "./ImageField";
 import { useDraft } from "./useDraft";
@@ -15,6 +16,9 @@ export function SettingsForm({
 }) {
   const { draft, set, dirty, busy, savedAt, commit, guard } = useDraft({
     writable,
+    // Settings is a singleton live document with no draft copy, so a silent
+    // autosave would publish half-finished edits.
+    autosave: false,
     initial: {
       name: settings.name,
       positioning: settings.positioning,
@@ -75,9 +79,7 @@ export function SettingsForm({
     },
   });
 
-  const placeholderPositioning = draft.positioning
-    .toLowerCase()
-    .includes("positioning statement sits here");
+  const placeholderPositioning = isPlaceholderPositioning(draft.positioning);
 
   return (
     <>
@@ -183,7 +185,7 @@ export function SettingsForm({
           >
             {busy ? "Saving…" : "Save"}
           </button>
-          {savedAt ? <span className="kick tnum">Autosaved {savedAt}</span> : null}
+          {savedAt ? <span className="kick tnum">Saved {savedAt}</span> : null}
           {dirty ? <span className="tag tag-accent">Unsaved changes</span> : null}
         </div>
       </form>

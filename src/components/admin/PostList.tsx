@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { AdminPost } from "@/lib/admin-content";
+import { Dialog } from "./Dialog";
 import { useToast } from "./Toast";
 import styles from "./admin.module.css";
 
@@ -17,6 +18,8 @@ export function PostList({
   const router = useRouter();
   const toast = useToast();
   const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<AdminPost | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   async function create() {
     setBusy(true);
@@ -35,6 +38,24 @@ export function PostList({
       return;
     }
     router.push(`/admin/writing/${encodeURIComponent(body.id)}`);
+  }
+
+  async function confirmDelete() {
+    if (!pending) return;
+    setDeleting(true);
+    const response = await fetch(
+      `/api/admin/posts/${encodeURIComponent(pending._id)}`,
+      { method: "DELETE" },
+    );
+    setDeleting(false);
+    if (!response.ok) {
+      const body = (await response.json().catch(() => null)) as { error?: string } | null;
+      toast(body?.error ?? "Could not delete the post.", "error");
+      return;
+    }
+    toast("Post deleted", "success");
+    setPending(null);
+    router.refresh();
   }
 
   return (
@@ -60,6 +81,7 @@ export function PostList({
               <th>Kind</th>
               <th>Status</th>
               <th style={{ textAlign: "right" }}>Date</th>
+              <th style={{ width: 40 }} aria-label="Actions" />
             </tr>
           </thead>
           <tbody>
@@ -79,6 +101,19 @@ export function PostList({
                 <td className="tnum" style={{ textAlign: "right", color: "var(--color-meta)" }}>
                   {post.date}
                 </td>
+                <td style={{ textAlign: "right" }}>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-icon"
+                    style={{ fontSize: 13 }}
+                    aria-label={`Delete ${post.title || "post"}`}
+                    disabled={!writable}
+                    title={writable ? undefined : "Studio is read-only"}
+                    onClick={() => setPending(post)}
+                  >
+                    ×
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -89,6 +124,30 @@ export function PostList({
           publishes.
         </div>
       )}
+
+      <Dialog
+        open={pending !== null}
+        title="Delete this post?"
+        onClose={() => setPending(null)}
+        actions={
+          <>
+            <button type="button" className="btn btn-ghost" onClick={() => setPending(null)}>
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => void confirmDelete()}
+              disabled={deleting}
+            >
+              {deleting ? "Deleting…" : "Delete"}
+            </button>
+          </>
+        }
+      >
+        “{pending?.title || "Untitled"}” will be removed permanently. This cannot
+        be undone.
+      </Dialog>
     </>
   );
 }

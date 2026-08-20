@@ -24,6 +24,9 @@ export function ProjectEditor({
 
   const { draft, set, dirty, busy, savedAt, commit, guard } = useDraft({
     writable,
+    // Projects have no draft document (a hidden project is still the live
+    // document), so a silent autosave would publish half-finished edits.
+    autosave: false,
     initial: {
       title: project.title ?? "",
       slug: project.slug ?? "",
@@ -106,7 +109,7 @@ export function ProjectEditor({
           {dirty ? <span className="tag tag-accent">Unsaved changes</span> : null}
         </div>
         <div className={styles.actions}>
-          {savedAt ? <span className="kick tnum">Autosaved {savedAt}</span> : null}
+          {savedAt ? <span className="kick tnum">Published {savedAt}</span> : null}
           <button
             type="button"
             className="btn btn-primary"
@@ -177,7 +180,12 @@ export function ProjectEditor({
 
           <div className="field">
             <label htmlFor="tags">Tags</label>
-            <TagInput id="tags" value={draft.tags} onChange={(next) => set("tags", next)} />
+            <TagInput
+              id="tags"
+              value={draft.tags}
+              onChange={(next) => set("tags", next)}
+              writable={writable}
+            />
           </div>
 
           <ImageField

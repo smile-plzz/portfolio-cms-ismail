@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { adminOverview } from "@/lib/admin-content";
 import { studioWritable } from "@/lib/admin";
+import { isPlaceholderPositioning } from "@/lib/text";
 import styles from "@/components/admin/admin.module.css";
 import { RecentTable } from "@/components/admin/RecentTable";
 
@@ -51,7 +52,7 @@ export default async function DashboardPage() {
           href: "/admin/projects",
         }
       : null,
-    settings.positioning.toLowerCase().includes("positioning statement sits here")
+    isPlaceholderPositioning(settings.positioning)
       ? {
           text: "Positioning line still placeholder",
           label: "Edit settings →",

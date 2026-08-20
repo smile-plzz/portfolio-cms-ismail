@@ -89,6 +89,8 @@ export function ImageField({
               type="button"
               className="btn btn-ghost"
               style={{ fontSize: 13 }}
+              disabled={!writable}
+              title={writable ? undefined : "Studio is read-only"}
               onClick={() => onChange(null)}
             >
               Remove
