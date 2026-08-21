@@ -60,7 +60,7 @@ export async function PublicLayout({ children }: { children: ReactNode }) {
 
       <div className={styles.main}>
         <header className={styles.topbar}>
-          <Link href="/" className={styles.topbarLeft}>
+          <Link href="/" className={styles.topbarLeft} data-topbar-brand>
             <Plate image={settings.portrait ?? null} height={30} width={30} />
             <span className={styles.topbarName}>{settings.name}</span>
           </Link>

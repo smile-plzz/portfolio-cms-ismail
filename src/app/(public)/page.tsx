@@ -7,6 +7,7 @@ import { VisitorCount } from "@/components/VisitorCount";
 import { Reveal } from "@/components/Reveal";
 import { JsonLd } from "@/components/JsonLd";
 import { absolute } from "@/lib/site";
+import { formatShortDate } from "@/lib/date";
 import {
   getCredentialCounts,
   getExperiences,
@@ -382,13 +383,3 @@ function Metric({ value, label }: { value: number; label: string }) {
   );
 }
 
-function formatShortDate(iso: string) {
-  const d = new Date(iso);
-  return d
-    .toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "2-digit",
-    })
-    .replace(/,/g, "");
-}

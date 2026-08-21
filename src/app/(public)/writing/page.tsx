@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getPosts } from "@/lib/content";
+import { formatShortDate } from "@/lib/date";
 import styles from "./writing.module.css";
 
 export const metadata: Metadata = {
@@ -66,14 +67,4 @@ export default async function WritingPage() {
       )}
     </>
   );
-}
-
-function formatShortDate(iso: string) {
-  return new Date(iso)
-    .toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "2-digit",
-    })
-    .replace(/,/g, "");
 }

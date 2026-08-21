@@ -47,6 +47,14 @@ export function ContactForm({
     const form = event.currentTarget;
     const data = new FormData(form);
 
+    // A bot fills every field, including the one no sighted human sees or
+    // tabs to. A hit here reports success without a network call.
+    if (String(data.get("_gotcha") ?? "").length > 0) {
+      setStatus("sent");
+      form.reset();
+      return;
+    }
+
     const valid = (["name", "email", "message"] as const)
       .map((field) => validateField(field, String(data.get(field) ?? "")))
       .every(Boolean);
@@ -106,6 +114,15 @@ export function ContactForm({
         maxWidth: 440,
       }}
     >
+      <input
+        type="text"
+        name="_gotcha"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: "absolute", left: "-9999px", width: 1, height: 1 }}
+      />
+
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <Field
           name="name"

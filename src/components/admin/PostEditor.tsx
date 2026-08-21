@@ -228,7 +228,12 @@ export function PostEditor({
 
           <div className="field">
             <label htmlFor="post-tags">Tags</label>
-            <TagInput id="post-tags" value={draft.tags} onChange={(next) => set("tags", next)} />
+            <TagInput
+              id="post-tags"
+              value={draft.tags}
+              onChange={(next) => set("tags", next)}
+              writable={writable}
+            />
           </div>
 
           <div style={{ fontSize: 12, color: "var(--color-meta)" }}>

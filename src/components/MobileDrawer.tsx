@@ -28,6 +28,33 @@ export function MobileDrawer({
     setOpen(false);
   }, [pathname]);
 
+  // Focus-trapping Tab keeps a sighted keyboard user inside the drawer, but a
+  // screen reader's virtual cursor ignores that trap entirely — it can still
+  // read into the sidebar and page content behind the drawer. `inert` (with
+  // aria-hidden as a fallback for browsers without it) removes that
+  // background from the accessibility tree for as long as the drawer is open.
+  useEffect(() => {
+    if (!open) return;
+
+    const hidden = [
+      document.querySelector<HTMLElement>('aside[aria-label="Site"]'),
+      document.querySelector<HTMLElement>("main"),
+      document.querySelector<HTMLElement>("[data-topbar-brand]"),
+    ].filter((node): node is HTMLElement => node !== null);
+
+    for (const node of hidden) {
+      node.setAttribute("inert", "");
+      node.setAttribute("aria-hidden", "true");
+    }
+
+    return () => {
+      for (const node of hidden) {
+        node.removeAttribute("inert");
+        node.removeAttribute("aria-hidden");
+      }
+    };
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
 
